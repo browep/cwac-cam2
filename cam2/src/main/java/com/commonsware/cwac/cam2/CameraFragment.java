@@ -21,6 +21,8 @@ import android.animation.ObjectAnimator;
 import android.app.ActionBar;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
@@ -385,6 +387,14 @@ public class CameraFragment extends Fragment {
         startTime = System.currentTimeMillis();
         Timer timer = new Timer();
         timer.schedule(timerTask, 0, 1000);
+
+        // lock screen to current orientation
+        int currentOrientation = getResources().getConfiguration().orientation;
+        if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+          getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+        } else {
+          getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+        }
       }
       catch (Exception e) {
         Log.e(getClass().getSimpleName(), "Exception recording video", e);
