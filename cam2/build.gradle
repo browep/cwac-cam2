@@ -4,6 +4,8 @@ dependencies {
     compile 'com.github.clans:fab:1.6.1'
     compile 'de.greenrobot:eventbus:2.4.0'
     androidTestCompile 'com.android.support.test:testing-support-lib:0.1'
+    compile project(':libraries:ppv-base')
+
 }
 
 android {
