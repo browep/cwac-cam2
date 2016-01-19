@@ -6,4 +6,5 @@
   <dimen name="cwac_cam2_fragment_panel_padding">16dp</dimen>
   <dimen name="cwac_cam2_fragment_panel_item_width">96dp</dimen>
   <dimen name="cwac_cam2_fragment_panel_item_height">48dp</dimen>
+  <dimen name="default_spacing">10dp</dimen>
 </resources>

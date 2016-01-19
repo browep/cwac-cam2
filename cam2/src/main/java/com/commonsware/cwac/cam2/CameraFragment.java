@@ -25,6 +25,7 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -32,10 +33,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
+import android.widget.TextView;
+
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedList;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import de.greenrobot.event.EventBus;
 
 /**
@@ -56,6 +65,10 @@ public class CameraFragment extends Fragment {
   private View progress;
   private boolean isVideoRecording=false;
   private boolean mirrorPreview=false;
+  private TextView clockText;
+  public static final DateFormat DATE_FORMAT = new SimpleDateFormat("mm:ss");
+  private Handler handler;
+  private long startTime;
 
   public static CameraFragment newPictureInstance(Uri output,
                                                   boolean updateMediaStore) {
@@ -96,6 +109,7 @@ public class CameraFragment extends Fragment {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    handler = new Handler();
 
     setRetainInstance(true);
   }
@@ -189,6 +203,7 @@ public class CameraFragment extends Fragment {
     progress=v.findViewById(R.id.cwac_cam2_progress);
 
     fabPicture=(FloatingActionButton)v.findViewById(R.id.cwac_cam2_picture);
+    clockText = (TextView) v.findViewById(R.id.clock);
 
     if (isVideo()) {
       fabPicture.setImageResource(R.drawable.cwac_cam2_ic_videocam);
@@ -325,6 +340,21 @@ public class CameraFragment extends Fragment {
     ctlr.takePicture(b.build());
   }
 
+
+  TimerTask timerTask = new TimerTask() {
+    @Override
+    public void run() {
+      handler.post(new Runnable() {
+        @Override
+        public void run() {
+          final long runMillis = System.currentTimeMillis() - startTime;
+          clockText.setText(DATE_FORMAT.format(new Date(runMillis)));
+          clockText.setVisibility(View.VISIBLE);
+        }
+      });
+    }
+  };
+
   private void recordVideo() {
     if (isVideoRecording) {
       try {
@@ -350,6 +380,11 @@ public class CameraFragment extends Fragment {
         fabPicture.setImageResource(R.drawable.cwac_cam2_ic_stop);
         fabPicture.setColorNormalResId(R.color.cwac_cam2_recording_fab);
         fabPicture.setColorPressedResId(R.color.cwac_cam2_recording_fab_pressed);
+
+
+        startTime = System.currentTimeMillis();
+        Timer timer = new Timer();
+        timer.schedule(timerTask, 0, 1000);
       }
       catch (Exception e) {
         Log.e(getClass().getSimpleName(), "Exception recording video", e);

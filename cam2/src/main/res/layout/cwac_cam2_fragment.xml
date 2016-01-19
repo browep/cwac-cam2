@@ -56,4 +56,18 @@
       fab:fab_size="mini"/>
 
   </com.github.clans.fab.FloatingActionMenu>
+
+  <TextView
+      android:id="@+id/clock"
+      android:visibility="gone"
+      android:layout_alignParentLeft="true"
+      android:layout_alignParentBottom="true"
+      android:layout_margin="16dp"
+      android:background="@color/black_semi_transparent"
+      android:textColor="@android:color/white"
+      android:textSize="18sp"
+      android:padding="16dp"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content" />
+
 </RelativeLayout>
