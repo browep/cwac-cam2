@@ -27,7 +27,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-public class ConfirmationFragment extends Fragment {
+public class ConfirmationFragment extends Fragment implements View.OnClickListener {
+
   public interface Contract {
     void completeRequest(ImageContext imageContext, boolean isOK);
     void retakePicture();
@@ -64,66 +65,70 @@ public class ConfirmationFragment extends Fragment {
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    iv=new ImageView(getActivity());
+    ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.fragment_capture_conf, container, false);
+    iv= (ImageView) viewGroup.findViewById(R.id.image);
+
+    viewGroup.findViewById(R.id.button_cancel).setOnClickListener(this);
+    viewGroup.findViewById(R.id.button_accept).setOnClickListener(this);
 
     if (imageContext!=null) {
       loadImage();
     }
 
-    return(iv);
+    return viewGroup;
   }
-
-  @Override
-  public void onHiddenChanged(boolean isHidden) {
-    super.onHiddenChanged(isHidden);
-
-    if (!isHidden) {
-      ActionBar ab=getActivity().getActionBar();
-
-      if (ab==null) {
-        throw new IllegalStateException("CameraActivity confirmation requires an action bar!");
-      }
-      else {
-        ab.setBackgroundDrawable(getActivity()
-            .getResources()
-            .getDrawable(R.drawable.cwac_cam2_action_bar_bg_translucent));
-        ab.setTitle("");
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-          ab.setDisplayHomeAsUpEnabled(true);
-          ab.setHomeAsUpIndicator(R.drawable.cwac_cam2_ic_close_white);
-        }
-        else {
-          ab.setIcon(R.drawable.cwac_cam2_ic_close_white);
-          ab.setDisplayShowHomeEnabled(true);
-          ab.setHomeButtonEnabled(true);
-        }
-      }
-    }
-  }
-
-  @Override
-  public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-    inflater.inflate(R.menu.cwac_cam2_confirm, menu);
-  }
-
-  @Override
-  public boolean onOptionsItemSelected(MenuItem item) {
-    if (item.getItemId()==android.R.id.home) {
-      getContract().completeRequest(imageContext, false);
-    }
-    else if (item.getItemId()==R.id.cwac_cam2_ok) {
-      getContract().completeRequest(imageContext, true);
-    }
-    else if (item.getItemId()==R.id.cwac_cam2_retry) {
-      getContract().retakePicture();
-    }
-    else {
-      return(super.onOptionsItemSelected(item));
-    }
-
-    return(true);
-  }
+//
+//  @Override
+//  public void onHiddenChanged(boolean isHidden) {
+//    super.onHiddenChanged(isHidden);
+//
+//    if (!isHidden) {
+//      ActionBar ab=getActivity().getActionBar();
+//
+//      if (ab==null) {
+//        throw new IllegalStateException("CameraActivity confirmation requires an action bar!");
+//      }
+//      else {
+//        ab.setBackgroundDrawable(getActivity()
+//            .getResources()
+//            .getDrawable(R.drawable.cwac_cam2_action_bar_bg_translucent));
+//        ab.setTitle("");
+//
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//          ab.setDisplayHomeAsUpEnabled(true);
+//          ab.setHomeAsUpIndicator(R.drawable.cwac_cam2_ic_close_white);
+//        }
+//        else {
+//          ab.setIcon(R.drawable.cwac_cam2_ic_close_white);
+//          ab.setDisplayShowHomeEnabled(true);
+//          ab.setHomeButtonEnabled(true);
+//        }
+//      }
+//    }
+//  }
+//
+//  @Override
+//  public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+//    inflater.inflate(R.menu.cwac_cam2_confirm, menu);
+//  }
+//
+//  @Override
+//  public boolean onOptionsItemSelected(MenuItem item) {
+//    if (item.getItemId()==android.R.id.home) {
+//      getContract().completeRequest(imageContext, false);
+//    }
+//    else if (item.getItemId()==R.id.cwac_cam2_ok) {
+//      getContract().completeRequest(imageContext, true);
+//    }
+//    else if (item.getItemId()==R.id.cwac_cam2_retry) {
+//      getContract().retakePicture();
+//    }
+//    else {
+//      return(super.onOptionsItemSelected(item));
+//    }
+//
+//    return(true);
+//  }
 
   public void setImage(ImageContext imageContext) {
     this.imageContext=imageContext;
@@ -140,4 +145,14 @@ public class ConfirmationFragment extends Fragment {
   private void loadImage() {
     iv.setImageBitmap(imageContext.buildPreviewThumbnail());
   }
+
+  @Override
+  public void onClick(View v) {
+    if (v.getId() == R.id.button_accept) {
+      getContract().completeRequest(imageContext, true);
+    } else if (v.getId() == R.id.button_cancel) {
+      getContract().retakePicture();
+    }
+  }
+
 }

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:background="@android:color/black"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/image"
+        android:scaleType="fitStart"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/black_semi_transparent"
+        android:id="@+id/accept_cancel_controls">
+        <ImageButton
+            android:id="@+id/button_cancel"
+            android:src="@drawable/cwac_cam2_ic_close_white"
+            style="@style/CameraAcceptCancel" />
+
+        <ImageButton
+            android:id="@+id/button_accept"
+            android:src="@drawable/cwac_cam2_ic_check_white"
+            style="@style/CameraAcceptCancel"  />
+    </LinearLayout>
+
+</RelativeLayout>
