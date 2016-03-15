@@ -243,6 +243,14 @@ public class CameraFragment extends Fragment {
       }
     });
 
+    v.findViewById(R.id.cwac_cam2_switch_picture).setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        getActivity().setResult(AbstractCameraActivity.START_PICTURE);
+        getActivity().finish();
+      }
+    });
+
 
     onHiddenChanged(false); // hack, since this does not get
                             // called on initial display
