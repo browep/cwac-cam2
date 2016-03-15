@@ -21,6 +21,7 @@ import android.animation.ObjectAnimator;
 import android.app.ActionBar;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.media.MediaScannerConnection;
@@ -40,6 +41,7 @@ import android.widget.TextView;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import java.io.File;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -60,6 +62,7 @@ public class CameraFragment extends Fragment {
   private static final String ARG_VIDEO_QUALITY="quality";
   private static final String ARG_SIZE_LIMIT="sizeLimit";
   private static final String ARG_DURATION_LIMIT="durationLimit";
+  private static final String TAG = CameraFragment.class.getCanonicalName();
   private CameraController ctlr;
   private ViewGroup previewStack;
   private FloatingActionButton fabPicture;
@@ -228,7 +231,14 @@ public class CameraFragment extends Fragment {
       }
     });
 
-    changeMenuIconAnimation((FloatingActionMenu)v.findViewById(R.id.cwac_cam2_settings));
+    v.findViewById(R.id.cwac_cam2_switch_video).setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        getActivity().setResult(AbstractCameraActivity.START_VIDEO);
+        getActivity().finish();
+      }
+    });
+
 
     onHiddenChanged(false); // hack, since this does not get
                             // called on initial display

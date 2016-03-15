@@ -55,6 +55,8 @@ abstract public class AbstractCameraActivity extends NoCompatBaseActivity {
    */
   public static final String EXTRA_FLASH_MODES=
     "cwac_cam2_flash_modes";
+  public static final int CAPTURE_MEDIA = 103;
+  public static final int START_VIDEO = 2001;
 
   /**
    * @return true if the activity wants FEATURE_ACTION_BAR_OVERLAY,

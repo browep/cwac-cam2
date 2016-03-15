@@ -176,4 +176,9 @@ public class VideoRecorderActivity extends AbstractCameraActivity {
       return(value);
     }
   }
+
+  @Override
+  public void finish() {
+    super.finish();
+  }
 }
