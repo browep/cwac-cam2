@@ -59,6 +59,18 @@
       fab:fab_colorPressed="@color/cwac_cam2_secondary_fab_pressed"
       />
 
+    <com.github.clans.fab.FloatingActionButton
+      android:id="@+id/cwac_cam2_switch_picture"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentBottom="true"
+      android:layout_alignParentLeft="true"
+      android:layout_margin="16dp"
+      android:src="@drawable/cwac_cam2_ic_action_camera"
+      fab:fab_colorNormal="@color/cwac_cam2_secondary_fab"
+      fab:fab_colorPressed="@color/cwac_cam2_secondary_fab_pressed"
+      />
+
   <TextView
       android:id="@+id/clock"
       android:visibility="gone"

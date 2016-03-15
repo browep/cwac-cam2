@@ -212,6 +212,9 @@ public class CameraFragment extends Fragment {
 
     if (isVideo()) {
       fabPicture.setImageResource(R.drawable.cwac_cam2_ic_videocam);
+      v.findViewById(R.id.cwac_cam2_switch_video).setVisibility(View.GONE);
+    } else {
+      v.findViewById(R.id.cwac_cam2_switch_picture).setVisibility(View.GONE);
     }
 
     fabPicture.setOnClickListener(new View.OnClickListener() {
@@ -234,6 +237,7 @@ public class CameraFragment extends Fragment {
     v.findViewById(R.id.cwac_cam2_switch_video).setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+        ((CameraActivity) getActivity()).removeFragments();
         getActivity().setResult(AbstractCameraActivity.START_VIDEO);
         getActivity().finish();
       }

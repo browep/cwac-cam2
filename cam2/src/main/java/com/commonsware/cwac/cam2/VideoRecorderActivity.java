@@ -177,8 +177,4 @@ public class VideoRecorderActivity extends AbstractCameraActivity {
     }
   }
 
-  @Override
-  public void finish() {
-    super.finish();
-  }
 }

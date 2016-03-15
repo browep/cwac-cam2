@@ -182,7 +182,7 @@ public class CameraActivity extends AbstractCameraActivity
         getIntent().getBooleanExtra(EXTRA_UPDATE_MEDIA_STORE, false)));
   }
 
-  private void removeFragments() {
+  public void removeFragments() {
     getFragmentManager()
         .beginTransaction()
         .remove(confirmFrag)
