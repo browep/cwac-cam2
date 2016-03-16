@@ -246,6 +246,10 @@ public class CameraFragment extends Fragment {
     v.findViewById(R.id.cwac_cam2_switch_picture).setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+        CameraFragment cameraFragment = ((VideoRecorderActivity)getActivity()).cameraFrag;
+        getActivity().getFragmentManager().beginTransaction()
+                .remove(cameraFragment)
+                .commit();
         getActivity().setResult(AbstractCameraActivity.START_PICTURE);
         getActivity().finish();
       }
