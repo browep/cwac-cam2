@@ -108,8 +108,6 @@ public class VideoRecorderActivity extends AbstractCameraActivity {
 
     @Override
     public Intent build() {
-      forceClassic();
-
       return(super.build());
     }
 

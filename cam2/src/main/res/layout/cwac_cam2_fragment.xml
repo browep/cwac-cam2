@@ -84,7 +84,6 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content" />
 
-  </com.github.clans.fab.FloatingActionMenu>
 
   <SeekBar
     android:id="@+id/cwac_cam2_zoom"
