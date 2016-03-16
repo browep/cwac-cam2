@@ -35,6 +35,7 @@ import de.greenrobot.event.EventBus;
  * by CameraFragment or the equivalent.
  */
 public class CameraController implements CameraView.StateCallback {
+  private final boolean allowChangeFlashMode;
   private CameraEngine engine;
   private CameraSession session;
   private List<CameraDescriptor> cameras=null;
@@ -44,17 +45,18 @@ public class CameraController implements CameraView.StateCallback {
   private Queue<CameraView> availablePreviews=null;
   private boolean switchPending=false;
   private boolean isVideoRecording=false;
-  private final AbstractCameraActivity.FocusMode focusMode;
-  private final List<FlashMode> flashModes;
+  private final FocusMode focusMode;
   private final boolean isVideo;
+  private FlashModePlugin flashModePlugin;
+  private int zoomLevel=0;
 
-  public CameraController(AbstractCameraActivity.FocusMode focusMode,
-                          List<FlashMode> flashModes,
+  public CameraController(FocusMode focusMode,
+                          boolean allowChangeFlashMode,
                           boolean isVideo) {
     this.focusMode=focusMode==null ?
-      AbstractCameraActivity.FocusMode.CONTINUOUS : focusMode;
-    this.flashModes=flashModes;
+      FocusMode.CONTINUOUS : focusMode;
     this.isVideo=isVideo;
+    this.allowChangeFlashMode=allowChangeFlashMode;
   }
 
   /**
@@ -216,6 +218,43 @@ public class CameraController implements CameraView.StateCallback {
     }
   }
 
+  public boolean canToggleFlashMode() {
+    return(allowChangeFlashMode &&
+      engine.supportsDynamicFlashModes() &&
+      engine.hasMoreThanOneEligibleFlashMode());
+  }
+
+  public FlashMode getCurrentFlashMode() {
+    return(session.getCurrentFlashMode());
+  }
+
+  boolean supportsZoom() {
+    return(engine.supportsZoom(session));
+  }
+
+  boolean changeZoom(int delta) {
+    zoomLevel+=delta;
+
+    return(handleZoom());
+  }
+
+  boolean setZoom(int zoomLevel) {
+    this.zoomLevel=zoomLevel;
+
+    return(handleZoom());
+  }
+
+  private boolean handleZoom() {
+    if (zoomLevel<0) {
+      zoomLevel=0;
+    }
+    else if (zoomLevel>100) {
+      zoomLevel=100;
+    }
+
+    return(engine.zoomTo(session, zoomLevel));
+  }
+
   private CameraView getPreview(CameraDescriptor camera) {
     CameraView result=previews.get(camera);
 
@@ -257,14 +296,15 @@ public class CameraController implements CameraView.StateCallback {
               previewSize.getHeight());
         }
 
+        flashModePlugin=new FlashModePlugin();
+
         session=engine
             .buildSession(cv.getContext(), camera)
             .addPlugin(new SizeAndFormatPlugin(previewSize,
               largest, ImageFormat.JPEG))
             .addPlugin(new OrientationPlugin(cv.getContext()))
             .addPlugin(new FocusModePlugin(cv.getContext(), focusMode, isVideo))
-            .addPlugin(
-              new FlashModePlugin(flashModes))
+            .addPlugin(flashModePlugin)
             .build();
 
         session.setPreviewSize(previewSize);

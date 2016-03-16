@@ -14,7 +14,6 @@
 
 package com.commonsware.cwac.cam2.util;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;

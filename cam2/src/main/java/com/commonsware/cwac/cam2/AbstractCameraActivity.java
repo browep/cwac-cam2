@@ -29,7 +29,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.FrameLayout;
 import com.commonsware.cwac.cam2.util.Utils;
 import com.github.browep.privatephotovault.base.activity.NoCompatBaseActivity;
 
@@ -58,6 +57,14 @@ abstract public class AbstractCameraActivity extends NoCompatBaseActivity {
   public static final int CAPTURE_MEDIA = 103;
   public static final int START_VIDEO = 2001;
   public static final int START_PICTURE = 2002;
+
+  /**
+   * True if we should allow the user to change the flash mode
+   * on the fly (if the camera supports it), false otherwise.
+   * Defaults to false.
+   */
+  public static final String EXTRA_ALLOW_SWITCH_FLASH_MODE=
+    "cwac_cam2_allow_switch_flash_mode";
 
   /**
    * @return true if the activity wants FEATURE_ACTION_BAR_OVERLAY,
@@ -303,15 +310,12 @@ abstract public class AbstractCameraActivity extends NoCompatBaseActivity {
 
       FocusMode focusMode=
         (FocusMode)getIntent().getSerializableExtra(EXTRA_FOCUS_MODE);
-      List<FlashMode> flashModes=
-        (List<FlashMode>)getIntent().getExtras().getSerializable(EXTRA_FLASH_MODES);
-
-      if (flashModes==null) {
-        flashModes=new ArrayList<FlashMode>();
-      }
+      boolean allowChangeFlashMode=
+        getIntent().getBooleanExtra(EXTRA_ALLOW_SWITCH_FLASH_MODE, false);
 
       CameraController ctrl=
-        new CameraController(focusMode, flashModes,isVideo());
+        new CameraController(focusMode, allowChangeFlashMode,
+          isVideo());
 
       cameraFrag.setController(ctrl);
       cameraFrag
@@ -375,21 +379,6 @@ abstract public class AbstractCameraActivity extends NoCompatBaseActivity {
     }
 
     return(result.toArray(new String[result.size()]));
-  }
-
-  /**
-   * Possible values for the facing property
-   */
-  public enum Facing {
-    FRONT, BACK;
-
-    boolean isFront() {
-      return(this==FRONT);
-    }
-  }
-
-  public enum FocusMode {
-    CONTINUOUS, OFF, EDOF
   }
 
   abstract public static class IntentBuilder<T extends IntentBuilder> {
@@ -597,6 +586,16 @@ abstract public class AbstractCameraActivity extends NoCompatBaseActivity {
     public T flashModes(List<FlashMode> modes) {
       result.putExtra(EXTRA_FLASH_MODES,
         new ArrayList<FlashMode>(modes));
+
+      return((T)this);
+    }
+
+    /**
+     * Call if we should allow the user to change the flash mode
+     * on the fly (if the camera supports it).
+     */
+    public T allowSwitchFlashMode() {
+      result.putExtra(EXTRA_ALLOW_SWITCH_FLASH_MODE, true);
 
       return((T)this);
     }

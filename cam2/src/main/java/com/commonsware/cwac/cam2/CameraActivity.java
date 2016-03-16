@@ -1,5 +1,5 @@
 /***
- Copyright (c) 2015 CommonsWare, LLC
+ Copyright (c) 2015-2016 CommonsWare, LLC
 
  Licensed under the Apache License, Version 2.0 (the "License"); you may
  not use this file except in compliance with the License. You may obtain
@@ -21,7 +21,6 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -51,6 +50,14 @@ public class CameraActivity extends AbstractCameraActivity
    */
   public static final String EXTRA_DEBUG_SAVE_PREVIEW_FRAME=
     "cwac_cam2_save_preview";
+
+  /**
+   * Extra name for whether the camera should allow zoom and
+   * how. Value should be a ZoomStyle (NONE, PINCH, SEEKBAR).
+   * Default is NONE.
+   */
+  public static final String EXTRA_ZOOM_STYLE=
+    "cwac_cam2_zoom_style";
 
   private static final String TAG_CONFIRM=ConfirmationFragment.class.getCanonicalName();
   private static final String[] PERMS={Manifest.permission.CAMERA};
@@ -174,12 +181,24 @@ public class CameraActivity extends AbstractCameraActivity
         .setDebugSavePreviewFile(new File(getExternalCacheDir(),
           "cam2-preview.jpg"));
     }
+
+    List<FlashMode> flashModes=
+      (List<FlashMode>)getIntent().getSerializableExtra(EXTRA_FLASH_MODES);
+
+    if (flashModes==null) {
+      flashModes=new ArrayList<FlashMode>();
+    }
+
+    if (flashModes!=null) {
+      engine.setPreferredFlashModes(flashModes);
+    }
   }
 
   @Override
   protected CameraFragment buildFragment() {
     return(CameraFragment.newPictureInstance(getOutputUri(),
-        getIntent().getBooleanExtra(EXTRA_UPDATE_MEDIA_STORE, false)));
+        getIntent().getBooleanExtra(EXTRA_UPDATE_MEDIA_STORE, false),
+        (ZoomStyle)getIntent().getSerializableExtra(EXTRA_ZOOM_STYLE)));
   }
 
   public void removeFragments() {
@@ -227,6 +246,18 @@ public class CameraActivity extends AbstractCameraActivity
 
     public IntentBuilder debugSavePreviewFrame() {
       result.putExtra(EXTRA_DEBUG_SAVE_PREVIEW_FRAME, true);
+
+      return(this);
+    }
+
+    /**
+     * Call to configure the ZoomStyle to be used. Default
+     * is NONE.
+     *
+     * @return the builder, for further configuration
+     */
+    public IntentBuilder zoomStyle(ZoomStyle zoomStyle) {
+      result.putExtra(EXTRA_ZOOM_STYLE, zoomStyle);
 
       return(this);
     }

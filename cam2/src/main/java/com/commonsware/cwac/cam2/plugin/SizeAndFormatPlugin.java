@@ -97,6 +97,7 @@ public class SizeAndFormatPlugin implements CameraPlugin {
      */
     @Override
     public Camera.Parameters configureStillCamera(
+      CameraSession session,
       Camera.CameraInfo info,
       Camera camera, Camera.Parameters params) {
       if (params!=null) {
@@ -111,7 +112,8 @@ public class SizeAndFormatPlugin implements CameraPlugin {
     }
 
     @Override
-    public void configureRecorder(int cameraId,
+    public void configureRecorder(CameraSession session,
+                                  int cameraId,
                                   VideoTransaction xact,
                                   MediaRecorder recorder) {
       boolean canGoHigh=CamcorderProfile.hasProfile(cameraId,

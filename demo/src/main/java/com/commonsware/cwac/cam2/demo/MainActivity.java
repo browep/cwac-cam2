@@ -29,9 +29,10 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
-import com.commonsware.cwac.cam2.AbstractCameraActivity;
 import com.commonsware.cwac.cam2.CameraActivity;
+import com.commonsware.cwac.cam2.Facing;
 import com.commonsware.cwac.cam2.FlashMode;
+import com.commonsware.cwac.cam2.ZoomStyle;
 import com.commonsware.cwac.security.RuntimePermissionUtils;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
@@ -53,6 +54,10 @@ public class MainActivity extends Activity {
   private static final String[] PERMS_ALL={
     CAMERA,
     WRITE_EXTERNAL_STORAGE
+  };
+  private static final FlashMode[] FLASH_MODES={
+    FlashMode.ALWAYS,
+    FlashMode.AUTO
   };
   private static final int REQUEST_PORTRAIT_RFC=1337;
   private static final int REQUEST_PORTRAIT_FFC=REQUEST_PORTRAIT_RFC+1;
@@ -279,13 +284,14 @@ public class MainActivity extends Activity {
   public void onEventMainThread(InitCaptureCompletedEvent event) {
     Intent i=new CameraActivity.IntentBuilder(this)
         .skipConfirm()
-        .facing(AbstractCameraActivity.Facing.BACK)
+        .facing(Facing.BACK)
         .facingExactMatch()
         .to(new File(testRoot, "portrait-rear.jpg"))
         .updateMediaStore()
         .debug()
         .debugSavePreviewFrame()
-        .flashMode(FlashMode.ALWAYS)
+        .flashModes(FLASH_MODES)
+        .zoomStyle(ZoomStyle.SEEKBAR)
         .build();
 
     startActivityForResult(i, REQUEST_PORTRAIT_RFC);
@@ -359,14 +365,15 @@ public class MainActivity extends Activity {
 
     Intent i=new CameraActivity.IntentBuilder(this)
       .skipConfirm()
-      .facing(AbstractCameraActivity.Facing.BACK)
+      .facing(Facing.BACK)
       .facingExactMatch()
       .to(new File(testRoot, "landscape-rear.jpg"))
-        .updateMediaStore()
-      .flashMode(FlashMode.ALWAYS)
+      .updateMediaStore()
+      .flashModes(FLASH_MODES)
+      .zoomStyle(ZoomStyle.SEEKBAR)
       .debugSavePreviewFrame()
-        .debug()
-        .build();
+      .debug()
+      .build();
 
     startActivityForResult(i, REQUEST_LANDSCAPE_RFC);
   }
@@ -374,10 +381,11 @@ public class MainActivity extends Activity {
   private void capturePortraitFFC() {
     Intent i=new CameraActivity.IntentBuilder(MainActivity.this)
       .skipConfirm()
-      .facing(AbstractCameraActivity.Facing.FRONT)
+      .facing(Facing.FRONT)
       .facingExactMatch()
       .to(new File(testRoot, "portrait-front.jpg"))
-      .flashMode(FlashMode.ALWAYS)
+      .flashModes(FLASH_MODES)
+      .zoomStyle(ZoomStyle.SEEKBAR)
       .debug()
       .debugSavePreviewFrame()
       .updateMediaStore()
@@ -389,11 +397,12 @@ public class MainActivity extends Activity {
   private void captureLandscapeFFC() {
     Intent i=new CameraActivity.IntentBuilder(MainActivity.this)
       .skipConfirm()
-      .facing(AbstractCameraActivity.Facing.FRONT)
+      .facing(Facing.FRONT)
       .facingExactMatch()
       .to(new File(testRoot, "landscape-front.jpg"))
       .updateMediaStore()
-      .flashMode(FlashMode.ALWAYS)
+      .flashModes(FLASH_MODES)
+      .zoomStyle(ZoomStyle.SEEKBAR)
       .debugSavePreviewFrame()
       .debug()
       .build();

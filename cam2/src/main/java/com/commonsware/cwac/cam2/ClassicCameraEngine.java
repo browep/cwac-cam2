@@ -35,6 +35,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import de.greenrobot.event.EventBus;
 
 /**
  * Implementation of a CameraEngine that supports the
@@ -43,7 +45,7 @@ import java.util.List;
 @SuppressWarnings("deprecation")
 public class ClassicCameraEngine extends CameraEngine
     implements MediaRecorder.OnInfoListener,
-    Camera.PreviewCallback {
+    Camera.PreviewCallback, Camera.OnZoomChangeListener {
   private final Context ctxt;
   private List<Descriptor> descriptors=null;
   private MediaRecorder recorder;
@@ -216,6 +218,36 @@ public class ClassicCameraEngine extends CameraEngine
           descriptor.setCamera(camera);
         }
 
+        Camera.Parameters params=camera.getParameters();
+        List<String> rawFlashModes=params.getSupportedFlashModes();
+
+        eligibleFlashModes.clear();
+
+        if (rawFlashModes!=null && preferredFlashModes!=null) {
+          for (FlashMode flashMode : preferredFlashModes) {
+            for (String rawFlashMode : rawFlashModes) {
+              if (rawFlashMode.equals(
+                flashMode.getClassicMode())) {
+                eligibleFlashModes.add(flashMode);
+                break;
+              }
+            }
+          }
+
+          if (eligibleFlashModes.isEmpty()) {
+            for (String rawFlashMode : rawFlashModes) {
+              FlashMode flashMode=
+                FlashMode.lookupClassicMode(rawFlashMode);
+
+              if (flashMode!=null) {
+                eligibleFlashModes.add(flashMode);
+              }
+            }
+          }
+
+          session.setCurrentFlashMode(eligibleFlashModes.get(0));
+        }
+
         try {
           camera.setParameters(((Session)session).configureStillCamera(
             false));
@@ -367,6 +399,52 @@ public class ClassicCameraEngine extends CameraEngine
     }.start();
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public boolean supportsDynamicFlashModes() {
+    return(false);
+  }
+
+  @Override
+  public boolean supportsZoom(CameraSession session) {
+    Descriptor descriptor=(Descriptor)session.getDescriptor();
+    Camera camera=descriptor.getCamera();
+    Camera.Parameters params=camera.getParameters();
+
+    return(params.isZoomSupported());
+  }
+
+  @Override
+  public boolean zoomTo(CameraSession session, int zoomLevel) {
+    Descriptor descriptor=(Descriptor)session.getDescriptor();
+    Camera camera=descriptor.getCamera();
+    Camera.Parameters params=camera.getParameters();
+    int zoom=zoomLevel*params.getMaxZoom()/100;
+    boolean result=false;
+
+    if (params.isSmoothZoomSupported()) {
+      camera.setZoomChangeListener(this);
+      camera.startSmoothZoom(zoom);
+      result=true;
+    }
+    else if (params.isZoomSupported()) {
+      params.setZoom(zoom);
+      camera.setParameters(params);
+    }
+
+    return(result);
+  }
+
+  @Override
+  public void onZoomChange(int zoomValue, boolean stopped,
+                           Camera camera) {
+    if (stopped) {
+      EventBus.getDefault().post(new SmoothZoomCompletedEvent());
+    }
+  }
+
   private class TakePictureTransaction implements Camera.PictureCallback {
     private final PictureTransaction xact;
     private final Context ctxt;
@@ -478,7 +556,7 @@ public class ClassicCameraEngine extends CameraEngine
 
           if (configurator!=null) {
             params=
-              configurator.configureStillCamera(info, camera,
+              configurator.configureStillCamera(this, info, camera,
                 params);
           }
         }
@@ -496,7 +574,7 @@ public class ClassicCameraEngine extends CameraEngine
           plugin.buildConfigurator(ClassicCameraConfigurator.class);
 
         if (configurator!=null) {
-          configurator.configureRecorder(descriptor.getCameraId(),
+          configurator.configureRecorder(this, descriptor.getCameraId(),
             xact, recorder);
         }
       }

@@ -110,6 +110,7 @@ public class OrientationPlugin implements CameraPlugin {
      */
     @Override
     public Camera.Parameters configureStillCamera(
+      CameraSession session,
       Camera.CameraInfo info,
       Camera camera, Camera.Parameters params) {
       int displayOrientation=getDisplayOrientation(info, true);
@@ -119,8 +120,7 @@ public class OrientationPlugin implements CameraPlugin {
         "sf2wifixx".equals(Build.PRODUCT)) {
         cameraDisplayOrientation=0;
       }
-      else if ("Huawei".equals(Build.MANUFACTURER) &&
-        "angler".equals(Build.PRODUCT)) {
+      else if (useAltAlgorithm()) {
         int degrees=0;
         int temp=displayOrientation;
 
@@ -167,8 +167,31 @@ public class OrientationPlugin implements CameraPlugin {
       return(params);
     }
 
+    private boolean useAltAlgorithm() {
+/*
+      if ("Huawei".equals(Build.MANUFACTURER) &&
+        "angler".equals(Build.PRODUCT)) {
+        return(true);
+      }
+
+      if ("LGE".equals(Build.MANUFACTURER) &&
+        "bullhead".equals(Build.PRODUCT)) {
+        return(true);
+      }
+
+      if ("samsung".equals(Build.MANUFACTURER) &&
+        "mprojectlteuc".equals(Build.PRODUCT)) {
+        return(true);
+      }
+
+      return(false);
+*/
+      return(true);
+    }
+
     @Override
-    public void configureRecorder(int cameraId,
+    public void configureRecorder(CameraSession session,
+                                  int cameraId,
                                   VideoTransaction xact,
                                   MediaRecorder recorder) {
       Camera.CameraInfo info=new Camera.CameraInfo();
@@ -223,7 +246,8 @@ public class OrientationPlugin implements CameraPlugin {
      * {@inheritDoc}
      */
     @Override
-    public void addToCaptureRequest(CameraCharacteristics cc,
+    public void addToCaptureRequest(CameraSession session,
+                                    CameraCharacteristics cc,
                                     boolean facingFront,
                                     CaptureRequest.Builder captureBuilder) {
       // based on https://developer.android.com/reference/android/hardware/camera2/CaptureRequest.html#JPEG_ORIENTATION
