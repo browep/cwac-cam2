@@ -37,6 +37,8 @@ import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -82,6 +84,9 @@ public class CameraFragment extends Fragment {
   public static final DateFormat DATE_FORMAT = new SimpleDateFormat("mm:ss");
   private Handler handler;
   private long startTime;
+  private View switchToPictureButton;
+  private View v;
+  private ImageButton switchToVideoButton;
 
   public static CameraFragment newPictureInstance(Uri output,
                                                   boolean updateMediaStore,
@@ -221,12 +226,13 @@ public class CameraFragment extends Fragment {
     progress=v.findViewById(R.id.cwac_cam2_progress);
     fabPicture=(FloatingActionButton)v.findViewById(R.id.cwac_cam2_picture);
     clockText = (TextView) v.findViewById(R.id.clock);
-
+    switchToPictureButton = v.findViewById(R.id.cwac_cam2_switch_picture);
+    switchToVideoButton = (ImageButton) v.findViewById(R.id.cwac_cam2_switch_video);
     if (isVideo()) {
       fabPicture.setImageResource(R.drawable.cwac_cam2_ic_videocam);
-      v.findViewById(R.id.cwac_cam2_switch_video).setVisibility(View.GONE);
+      switchToVideoButton.setVisibility(View.GONE);
     } else {
-      v.findViewById(R.id.cwac_cam2_switch_picture).setVisibility(View.GONE);
+      switchToPictureButton.setVisibility(View.GONE);
     }
 
     fabPicture.setOnClickListener(new View.OnClickListener() {
@@ -454,6 +460,8 @@ public class CameraFragment extends Fragment {
         fabPicture.setColorNormalResId(R.color.cwac_cam2_recording_fab);
         fabPicture.setColorPressedResId(R.color.cwac_cam2_recording_fab_pressed);
 
+        fabSwitch.setVisibility(View.GONE);
+        switchToPictureButton.setVisibility(View.GONE);
 
         startTime = System.currentTimeMillis();
         Timer timer = new Timer();
