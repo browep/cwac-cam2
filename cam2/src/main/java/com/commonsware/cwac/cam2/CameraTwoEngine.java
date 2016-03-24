@@ -870,7 +870,7 @@ public class CameraTwoEngine extends CameraEngine {
       image.close();
 
       bus.post(new PictureTakenEvent(xact,
-        xact.process(new ImageContext(ctxt, bytes, 0, 0))));
+        xact.process(new ImageContext(ctxt, bytes, 0, 0, false))));
     }
   }
 }

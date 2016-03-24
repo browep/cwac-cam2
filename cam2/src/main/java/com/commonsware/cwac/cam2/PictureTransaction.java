@@ -30,6 +30,7 @@ import java.util.ArrayList;
  */
 public class PictureTransaction {
     public static final String DISPLAY_ORIENTATION = "display_orientation";
+    public static final String IS_FRONT_FACING = "is_front_facing";
     private ArrayList<ImageProcessor> processors=new ArrayList<ImageProcessor>();
   private Bundle props=new Bundle();
     public static final SparseIntArray ORIENTATIONS = new SparseIntArray();

@@ -467,8 +467,9 @@ public class ClassicCameraEngine extends CameraEngine
           Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
           Camera.getCameraInfo(descriptor.cameraId, cameraInfo);
 
+          int displayOrientation = xact.getProperties().getInt(PictureTransaction.DISPLAY_ORIENTATION, 0);
           getBus().post(new PictureTakenEvent(xact,
-            xact.process(new ImageContext(ctxt, bytes, cameraInfo.orientation, xact.getProperties().getInt(PictureTransaction.DISPLAY_ORIENTATION, 0)))));
+            xact.process(new ImageContext(ctxt, bytes, cameraInfo.orientation, displayOrientation, cameraInfo.facing == 1))));
         }
       });
     }

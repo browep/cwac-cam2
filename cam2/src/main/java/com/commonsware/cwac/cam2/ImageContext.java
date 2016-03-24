@@ -41,19 +41,12 @@ public class ImageContext {
   private Bitmap thumbnail;
   private int cameraOrientation;
   private int displayOrientation;
+  private boolean isFrontFacing;
 
-  private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
-
-  static {
-    ORIENTATIONS.append(Surface.ROTATION_0, 180);
-    ORIENTATIONS.append(Surface.ROTATION_90, 90);
-    ORIENTATIONS.append(Surface.ROTATION_180, 0);
-    ORIENTATIONS.append(Surface.ROTATION_270, 270);
-  }
-
-  ImageContext(Context ctxt, byte[] jpeg, int cameraOrientation, int displayOrientation) {
+  ImageContext(Context ctxt, byte[] jpeg, int cameraOrientation, int displayOrientation, boolean isFrontFacing) {
     this.cameraOrientation = cameraOrientation;
     this.displayOrientation = displayOrientation;
+    this.isFrontFacing = isFrontFacing;
     this.ctxt=ctxt.getApplicationContext();
     setJpeg(jpeg);
   }
@@ -142,9 +135,16 @@ public class ImageContext {
     if (result.getByteCount()>limit) {
       return(createThumbnail(inSampleSize+1, inBitmap, limit));
     } else if (cameraOrientation != 0){
-      Log.d(TAG,"cameraOrientation: " + cameraOrientation + " displayOrientation: " + displayOrientation);
       Matrix matrix = new Matrix();
-      matrix.postRotate((cameraOrientation + displayOrientation)%360);
+      int rotate = (cameraOrientation + displayOrientation) % 360;
+      Log.d(TAG, "cameraOrientation: " + cameraOrientation + " displayOrientation: " + displayOrientation +  " isFrontFacing: "+ isFrontFacing + " rotate: " + rotate);
+
+      if (isFrontFacing && (displayOrientation == 90 || displayOrientation == 270)) {
+        // rotate for front facing on landscape
+        rotate = (rotate + 540)%360;
+      }
+      Log.d(TAG, "rotate: " + rotate);
+      matrix.postRotate(rotate);
       Bitmap rotatedBitmap = Bitmap.createBitmap(result , 0, 0, result.getWidth(), result.getHeight(), matrix, true);
       result = rotatedBitmap;
     }
