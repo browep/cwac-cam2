@@ -44,10 +44,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
@@ -873,7 +870,7 @@ public class CameraTwoEngine extends CameraEngine {
       image.close();
 
       bus.post(new PictureTakenEvent(xact,
-        xact.process(new ImageContext(ctxt, bytes))));
+        xact.process(new ImageContext(ctxt, bytes, 0, 0))));
     }
   }
 }

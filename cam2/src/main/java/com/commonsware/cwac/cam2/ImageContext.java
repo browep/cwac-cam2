@@ -17,6 +17,10 @@ package com.commonsware.cwac.cam2;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.util.Log;
+import android.util.SparseIntArray;
+import android.view.Surface;
 
 /**
  * Represents a picture taken by the camera, to be passed through
@@ -30,12 +34,26 @@ import android.graphics.BitmapFactory;
  */
 public class ImageContext {
   private static final double LOG_2=Math.log(2.0d);
+  private static final String TAG = ImageContext.class.getCanonicalName();
   private Context ctxt;
   private byte[] jpeg;
   private Bitmap bmp;
   private Bitmap thumbnail;
+  private int cameraOrientation;
+  private int displayOrientation;
 
-  ImageContext(Context ctxt, byte[] jpeg) {
+  private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
+
+  static {
+    ORIENTATIONS.append(Surface.ROTATION_0, 180);
+    ORIENTATIONS.append(Surface.ROTATION_90, 90);
+    ORIENTATIONS.append(Surface.ROTATION_180, 0);
+    ORIENTATIONS.append(Surface.ROTATION_270, 270);
+  }
+
+  ImageContext(Context ctxt, byte[] jpeg, int cameraOrientation, int displayOrientation) {
+    this.cameraOrientation = cameraOrientation;
+    this.displayOrientation = displayOrientation;
     this.ctxt=ctxt.getApplicationContext();
     setJpeg(jpeg);
   }
@@ -123,6 +141,12 @@ public class ImageContext {
 
     if (result.getByteCount()>limit) {
       return(createThumbnail(inSampleSize+1, inBitmap, limit));
+    } else if (cameraOrientation != 0){
+      Log.d(TAG,"cameraOrientation: " + cameraOrientation + " displayOrientation: " + displayOrientation);
+      Matrix matrix = new Matrix();
+      matrix.postRotate((cameraOrientation + displayOrientation)%360);
+      Bitmap rotatedBitmap = Bitmap.createBitmap(result , 0, 0, result.getWidth(), result.getHeight(), matrix, true);
+      result = rotatedBitmap;
     }
 
     return(result);

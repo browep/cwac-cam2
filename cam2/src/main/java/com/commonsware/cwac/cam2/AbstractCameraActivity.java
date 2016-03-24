@@ -16,7 +16,6 @@ package com.commonsware.cwac.cam2;
 
 import android.annotation.TargetApi;
 import android.app.ActionBar;
-import android.app.Activity;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;

@@ -17,6 +17,9 @@ package com.commonsware.cwac.cam2;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.SparseIntArray;
+import android.view.Surface;
+
 import java.io.File;
 import java.util.ArrayList;
 
@@ -26,10 +29,19 @@ import java.util.ArrayList;
  * an instance. Beyond that, this is an opaque blob to you.
  */
 public class PictureTransaction {
-  private ArrayList<ImageProcessor> processors=new ArrayList<ImageProcessor>();
+    public static final String DISPLAY_ORIENTATION = "display_orientation";
+    private ArrayList<ImageProcessor> processors=new ArrayList<ImageProcessor>();
   private Bundle props=new Bundle();
+    public static final SparseIntArray ORIENTATIONS = new SparseIntArray();
 
-  private PictureTransaction() {
+    static {
+        ORIENTATIONS.append(Surface.ROTATION_0, 0);
+        ORIENTATIONS.append(Surface.ROTATION_90, 270);
+        ORIENTATIONS.append(Surface.ROTATION_180, 180);
+        ORIENTATIONS.append(Surface.ROTATION_270, 90);
+    }
+
+    private PictureTransaction() {
     // use the builder, please
   }
 
@@ -114,9 +126,20 @@ public class PictureTransaction {
       result
           .getProperties()
           .putBoolean(JPEGWriter.PROP_UPDATE_MEDIA_STORE,
-              updateMediaStore);
+                  updateMediaStore);
 
       return (this);
     }
+
+      /**
+       *
+       * @param rotationEnum 0,1,2,3, corresponds to #ORIENTATIONS
+       * @return
+       */
+      public Builder displayOrientation(int rotationEnum) {
+          int orientationDegrees = PictureTransaction.ORIENTATIONS.get(rotationEnum);
+          result.getProperties().putInt(DISPLAY_ORIENTATION, orientationDegrees);
+          return this;
+      }
   }
 }

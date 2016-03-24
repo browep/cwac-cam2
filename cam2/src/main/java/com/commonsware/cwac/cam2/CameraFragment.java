@@ -405,6 +405,9 @@ public class CameraFragment extends Fragment {
           getArguments().getBoolean(ARG_UPDATE_MEDIA_STORE, false));
     }
 
+    int rotationEnum = (getActivity()).getWindowManager().getDefaultDisplay().getRotation();
+    b.displayOrientation(rotationEnum);
+
     fabPicture.setEnabled(false);
     fabSwitch.setEnabled(false);
     ctlr.takePicture(b.build());

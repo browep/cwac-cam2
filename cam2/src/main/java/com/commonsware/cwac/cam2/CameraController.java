@@ -279,12 +279,12 @@ public class CameraController implements CameraView.StateCallback {
   private void open() {
     if (session==null) {
       Size previewSize=null;
-      CameraDescriptor camera=cameras.get(currentCamera);
-      CameraView cv=getPreview(camera);
-      Size largest=Utils.getLargestPictureSize(camera);
+      CameraDescriptor cameraDescriptor=cameras.get(currentCamera);
+      CameraView cv=getPreview(cameraDescriptor);
+      Size largest=Utils.getLargestPictureSize(cameraDescriptor);
 
-      if (camera != null && cv.getWidth() > 0 && cv.getHeight() > 0) {
-        previewSize=Utils.chooseOptimalSize(camera.getPreviewSizes(),
+      if (cameraDescriptor != null && cv.getWidth() > 0 && cv.getHeight() > 0) {
+        previewSize=Utils.chooseOptimalSize(cameraDescriptor.getPreviewSizes(),
             cv.getWidth(), cv.getHeight(), largest);
       }
 
@@ -299,7 +299,7 @@ public class CameraController implements CameraView.StateCallback {
         flashModePlugin=new FlashModePlugin();
 
         session=engine
-            .buildSession(cv.getContext(), camera)
+            .buildSession(cv.getContext(), cameraDescriptor)
             .addPlugin(new SizeAndFormatPlugin(previewSize,
               largest, ImageFormat.JPEG))
             .addPlugin(new OrientationPlugin(cv.getContext()))

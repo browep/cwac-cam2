@@ -46,6 +46,7 @@ import de.greenrobot.event.EventBus;
 public class ClassicCameraEngine extends CameraEngine
     implements MediaRecorder.OnInfoListener,
     Camera.PreviewCallback, Camera.OnZoomChangeListener {
+  private static final String TAG = ClassicCameraEngine.class.getCanonicalName();
   private final Context ctxt;
   private List<Descriptor> descriptors=null;
   private MediaRecorder recorder;
@@ -188,7 +189,7 @@ public class ClassicCameraEngine extends CameraEngine
                                  // empty plays a sound -- go figure
                                }
                              }, null,
-              new TakePictureTransaction(session.getContext(), xact));
+              new TakePictureTransaction(session, session.getContext(), xact));
         }
         catch (Exception e) {
           getBus().post(new PictureTakenEvent(e));
@@ -448,8 +449,10 @@ public class ClassicCameraEngine extends CameraEngine
   private class TakePictureTransaction implements Camera.PictureCallback {
     private final PictureTransaction xact;
     private final Context ctxt;
+    private CameraSession session;
 
-    TakePictureTransaction(Context ctxt, PictureTransaction xact) {
+    TakePictureTransaction(CameraSession session, Context ctxt, PictureTransaction xact) {
+      this.session = session;
       this.ctxt=ctxt.getApplicationContext();
       this.xact=xact;
     }
@@ -460,8 +463,12 @@ public class ClassicCameraEngine extends CameraEngine
         @Override
         public void run() {
           camera.startPreview();
+          Descriptor descriptor = (Descriptor) session.getDescriptor();
+          Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
+          Camera.getCameraInfo(descriptor.cameraId, cameraInfo);
+
           getBus().post(new PictureTakenEvent(xact,
-            xact.process(new ImageContext(ctxt, bytes))));
+            xact.process(new ImageContext(ctxt, bytes, cameraInfo.orientation, xact.getProperties().getInt(PictureTransaction.DISPLAY_ORIENTATION, 0)))));
         }
       });
     }
