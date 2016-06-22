@@ -4,9 +4,9 @@
     android:background="@android:color/black"
     android:layout_height="match_parent">
 
-    <ImageView
+    <com.github.browep.privatephotovault.view.FixedCenterCropImageView
         android:id="@+id/image"
-        android:scaleType="fitXY"
+        android:scaleType="fitCenter"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
