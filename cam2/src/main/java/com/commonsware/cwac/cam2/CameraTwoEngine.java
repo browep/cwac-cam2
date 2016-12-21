@@ -543,10 +543,10 @@ public class CameraTwoEngine extends CameraEngine {
       if (isWaitingForFocus) {
         isWaitingForFocus=false;
 
-        int autoFocusState=result.get(CaptureResult.CONTROL_AF_STATE);
+        Integer autoFocusState= result.get(CaptureResult.CONTROL_AF_STATE);
 
-        if (CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED == autoFocusState ||
-            CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED == autoFocusState) {
+        if (autoFocusState != null && (CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED == autoFocusState ||
+            CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED == autoFocusState)) {
           Integer state=result.get(CaptureResult.CONTROL_AE_STATE);
 
           if (state == null ||
