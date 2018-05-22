@@ -16,6 +16,7 @@ package com.commonsware.cwac.cam2;
 
 import android.annotation.TargetApi;
 import android.app.ActionBar;
+import android.app.Activity;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
@@ -29,7 +30,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import com.commonsware.cwac.cam2.util.Utils;
-import com.github.browep.privatephotovault.base.activity.NoCompatBaseActivity;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -41,7 +41,7 @@ import de.greenrobot.event.EventBus;
  * Base class for activities that integrate with CameraFragment
  * for taking pictures or recording video.
  */
-abstract public class AbstractCameraActivity extends NoCompatBaseActivity {
+abstract public class AbstractCameraActivity extends Activity {
   /**
    * List<FlashMode> indicating the desired flash modes,
    * or null for always taking the default. These are
